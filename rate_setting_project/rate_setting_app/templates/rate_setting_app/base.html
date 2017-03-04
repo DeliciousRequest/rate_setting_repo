@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+    <title>{% block title %}Rate Setting{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'rate_setting_app/style.css' %}" />
+</head>
+<body>
+	<ul class="nav">
+		<div class="logo">
+			Rate Setting App
+		</div>
+
+		<li><a href="{% url 'validation' %}">Validation</a></li>
+		<li><a href="{% url 'tables' %}">Tables</a></li>
+	</ul>
+	
+	<div class="sub_banner">
+		<b>{% block subtitle %}Sub-Title{% endblock %}</b>
+	</div>
+	
+	<div class="content">
+        {% block content %}{% endblock %}
+    </div>
+    
+</body>
+</html>
