@@ -6,15 +6,15 @@
 {% block content %}
 <b>Please select the tables you want to validate and upload the corresponding sheets.</b> <br />
 <br />
-<input type="file" /> <br />
+<input id="file_input_1" type="file" /> <br />
 <br />
-<input type="file" /> <br />
+<input id="file_input_2" type="file" /> <br />
 <br />
-<input type="file" /> <br />
+<input id="file_input_3" type="file" /> <br />
 <br />
-<input type="button" value="Go" /> <input type="button" value="Clear" />
+<input id="btn_go" type="button" value="Go" /> <input id="btn_clear" type="button" value="Clear" />
 <br />
 <br />
 <b>Validation Results:</b> <br />
-<textarea name="text" cols="87" rows="20" disabled></textarea>
+<textarea id="ta_results" cols="87" rows="20" disabled></textarea>
 {% endblock %}
