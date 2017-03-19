@@ -1,9 +1,10 @@
 $(document).ready(function() {
 
 $('#btn_go').click(function(){
-	var string = document.getElementById('file_input_1').value;
-	document.getElementById('ta_results').value = "File 1's name is: " + string;
+	$.get('/rate_setting/validate_tables/', function( data ) {
+		  $('#ta_results').val(data);
 		});
+	});
 
 $('#btn_clear').click(function(){
 	document.getElementById("file_input_1").value = "";

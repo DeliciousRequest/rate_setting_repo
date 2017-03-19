@@ -12,6 +12,5 @@ def tables(request):
     return render(request, 'rate_setting_app/tables.html')
 
 def validate_tables(request):
-    context = RequestContext(request)
-    error_messages = ['test message', 'test message 2']
-    return HttpResponse(error_messages)
+    error_message = 'Validation will go here.'
+    return HttpResponse(error_message)
