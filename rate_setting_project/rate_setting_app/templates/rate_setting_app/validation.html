@@ -16,5 +16,15 @@
 <br />
 <br />
 <b>Validation Results:</b> <br />
-<textarea id="ta_results" cols="87" rows="20" disabled></textarea>
+<textarea id="ta_results" cols="87" rows="20" disabled>
+{% if uploaded_file_url %}The table name is: {{ table_name }}{% endif %}
+</textarea>
+
+<!--  Testing sample file upload -->
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="myfile">
+    <button type="submit">Upload</button>
+  </form>
+
 {% endblock %}
