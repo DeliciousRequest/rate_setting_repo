@@ -4,19 +4,19 @@
 {% block subtitle %}Validation{% endblock %}
 
 {% block content %}
-<!--  Testing sample file upload -->
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <b>Please upload the sheet you want to validate.</b> <br />
     <br />
-    <input type="file" name="myfile"> <br />
+    <input type="file" id="file_input_1" name="myfile"> <br />
     <br />
-    <button type="submit">Go</button> <input id="btn_clear" type="button" value="Clear" />
+    <button type="submit">Go</button> <button type="reset" id="btn_clear">Clear</button>
   </form>
+
 <br />
 <b>Validation Results:</b> <br />
 <textarea id="ta_results" cols="87" rows="20" disabled>
-{% if uploaded_file_url %}The table name is: {{ table_name }}{% endif %}
+{% if validation_results %}{{ validation_results }}{% endif %}
 </textarea>
 
 {% endblock %}

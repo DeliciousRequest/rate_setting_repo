@@ -4,6 +4,7 @@ from django.template import loader
 from django.template.context import RequestContext
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+from rate_setting_app.rateValidation import *
 
 import openpyxl
 
@@ -14,13 +15,9 @@ def validation(request):
         myfile = request.FILES['myfile']
         fs = FileSystemStorage()
         filename = fs.save(myfile.name, myfile)
-        uploaded_file_url = fs.url(filename)
-        wb = openpyxl.load_workbook(request.FILES['myfile'])
-        sheet = wb.active
-        table_name = sheet['A2'].value + '\n test'
+        validation_results = validateSpreadsheet(request.FILES['myfile'])
         return render(request, 'rate_setting_app/validation.html', {
-            'uploaded_file_url': uploaded_file_url,
-            'table_name': table_name
+            'validation_results': validation_results,
         })
     return render(request, 'rate_setting_app/validation.html')
     
