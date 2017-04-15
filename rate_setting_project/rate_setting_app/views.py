@@ -8,18 +8,25 @@ from rate_setting_app.rateValidation import *
 
 import openpyxl
 
+from .forms import SpreadsheetForm
+
 # Create your views here.
-    
 def validation(request):
-    if request.method == 'POST' and request.FILES['myfile']:
-        myfile = request.FILES['myfile']
-        fs = FileSystemStorage()
-        filename = fs.save(myfile.name, myfile)
-        validation_results = validateSpreadsheet(request.FILES['myfile'])
-        return render(request, 'rate_setting_app/validation.html', {
-            'validation_results': validation_results,
-        })
-    return render(request, 'rate_setting_app/validation.html')
+    if request.method == 'POST':
+        form = SpreadsheetForm(request.POST, request.FILES)
+        if form.is_valid():
+            validation_results = validateSpreadsheet(request.FILES['spreadsheet'])
+            form = SpreadsheetForm()
+            return render(request, 'rate_setting_app/validation.html', {
+                'validation_results': validation_results,
+                'form' : form
+            })
+    else:
+        form = SpreadsheetForm()
+    return render(request, 'rate_setting_app/validation.html', {
+        'form': form
+    })
+    
     
 def tables(request):
     return render(request, 'rate_setting_app/tables.html')

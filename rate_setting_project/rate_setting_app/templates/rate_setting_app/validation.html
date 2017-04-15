@@ -4,16 +4,13 @@
 {% block subtitle %}Validation{% endblock %}
 
 {% block content %}
-<form method="post" enctype="multipart/form-data">
+ <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <b>Please upload the sheet you want to validate.</b> <br />
-    <br />
-    <input type="file" id="file_input_1" name="myfile"> <br />
-    <br />
+    {{ form.as_p }}
     <button type="submit">Go</button> <button type="reset" id="btn_clear">Clear</button>
-  </form>
+ </form>
 
-<br />
 <b>Validation Results:</b> <br />
 <textarea id="ta_results" cols="87" rows="20" disabled>
 {% if validation_results %}{{ validation_results }}{% endif %}
