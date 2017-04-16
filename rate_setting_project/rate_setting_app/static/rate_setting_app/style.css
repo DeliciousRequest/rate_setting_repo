@@ -47,3 +47,10 @@ body {
 .content {
 	padding: 10px 0 0 30px;
 }
+
+.errorlist {
+    color: #f70202;
+    font-weight: bold;
+    list-style-type: none;
+    padding: 0;
+}

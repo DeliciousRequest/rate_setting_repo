@@ -27,6 +27,5 @@ def validation(request):
         'form': form
     })
     
-    
 def tables(request):
     return render(request, 'rate_setting_app/tables.html')
