@@ -5,6 +5,7 @@ from django.template.context import RequestContext
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from rate_setting_app.rateValidation import *
+from rate_setting_app.tableDumps import *
 
 import openpyxl
 
@@ -28,4 +29,9 @@ def validation(request):
     })
     
 def tables(request):
+    if request.method == 'POST':
+        table_list = populateTableDump(request.POST['tableSelect'])
+        return render(request, 'rate_setting_app/tables.html', {
+            'table_list': table_list
+        })
     return render(request, 'rate_setting_app/tables.html')

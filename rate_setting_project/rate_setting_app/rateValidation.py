@@ -55,9 +55,11 @@ def validateTableSubset(inputCellValue, inputRow, inputSubset, inputSubset2 = No
                 if inputSubset3 != None and str(inputCellValue) not in inputSubset3:
                     if inputSubset4 != None and str(inputCellValue) not in inputSubset4:
                         subsetError.append('The TABLE_SUBSET record is invalid. Row ' + str(inputRow) + '.')
-                else:
+                    elif inputSubset4 == None:
+                        subsetError.append('The TABLE_SUBSET record is invalid. Row ' + str(inputRow) + '.')
+                elif inputSubset3 == None:
                     subsetError.append('The TABLE_SUBSET record is invalid. Row ' + str(inputRow) + '.')
-            else:
+            elif inputSubset2 == None:
                 subsetError.append('The TABLE_SUBSET record is invalid. Row ' + str(inputRow) + '.')
     return subsetError
 
@@ -118,10 +120,44 @@ def validateIssueState(sheetObject, inputRow, inputColumn):
         issueStateError.append('The ISSUE_STATE record is invalid. Row ' + str(inputRow) + '.')
     return issueStateError
 
+def determineRowCount(inputConn, tableName):
+    sqlCount = 'SELECT COUNT(*) FROM E0015DB.' + tableName + ' WHERE COMPANY_CODE = \'MLF\''
+    stmt = ibm_db.exec_immediate(inputConn, sqlCount)
+    dictionary = ibm_db.fetch_tuple(stmt)
+    rowCount = 0
+    while dictionary != False:
+        rowCount = int(dictionary[0])
+        dictionary = ibm_db.fetch_tuple(stmt)
+    return rowCount
+
+def populateTableDump(inputConn, tableName):
+    sql = 'SELECT * FROM E0015DB.' + tableName + ' WHERE COMPANY_CODE = \'MLF\' FETCH FIRST ' + str(determineRowCount(conn, tableName)) + ' ROWS ONLY'
+    stmt = ibm_db.exec_immediate(inputConn, sql)
+    dictionary = ibm_db.fetch_tuple(stmt)
+    tableList = []
+    while dictionary != False:
+        currentRow = list(dictionary)
+        for i in range(len(currentRow)):
+            try:
+                currentRow[i] = currentRow[i].strip()
+            except:
+                pass
+            
+            if i == 3 or i == 6:
+                currentRow[i] = currentRow[i].replace('\x9f', '*')
+
+            if i == 4 or i == 5:
+                currentRow[i] = currentRow[i].strftime('%Y-%m-%d')
+
+        tableList.append(currentRow)
+        dictionary = ibm_db.fetch_tuple(stmt)
+    return tableList
+
 def validateData(inputSheet):
     dataErrors = []
     allAddRows = []
     rowData = []
+    tableDump = []
     
     if inputSheet.max_row == 3: #Check to see if data is present, should be outside of for loop to reduce number of checks in loop
         dataErrors.append('No data is present in the spreadsheet.')
@@ -132,6 +168,26 @@ def validateData(inputSheet):
     elif inputSheet.title == 'TU130' and inputSheet.max_column != 6:
         dataErrors.append('An incorrect number of columns are present in the spreadsheet. Further validation cannot occur.')
     else:
+        if inputSheet.title == 'T025X':
+            populateSubsets(conn, sqlT024X1, subsetT024X1, field24X1)
+            populateSubsets(conn, sqlTAD3F, subsetTAD3F, fieldD3F)
+            populateSubsets(conn, sqlT0C8X1, subsetT0C8X1, fieldT0C8X1)
+            populateSubsets(conn, sqlT0C8X2, subsetT0C8X2, fieldT0C8X2)
+            print('Subsets complete. Starting table dump.')
+            tableDump = populateTableDump(conn, inputSheet.title)
+            print('Table dump complete. Starting Validation.')
+        elif inputSheet.title == 'T026X':
+            populateSubsets(conn, sqlT024X2, subsetT024X2, field24X2)
+            populateSubsets(conn, sqlT0C8X3, subsetT0C8X3, fieldT0C8X3)
+            populateSubsets(conn, sqlT0C8X4, subsetT0C8X4, fieldT0C8X4)
+            populateSubsets(conn, sqlT0C8X5, subsetT0C8X5, fieldT0C8X5)
+            print('Subsets complete. Starting table dump.')
+            tableDump = populateTableDump(conn, inputSheet.title)
+            print('Table dump complete. Starting Validation.')
+        elif inputSheet.title == 'TU130':
+            tableDump = populateTableDump(conn, inputSheet.title)
+            print('Table dump complete. Starting Validation.') 
+        
         for row in range(4,inputSheet.max_row + 1): #begin validating data, row by row   
             for column in range(1, inputSheet.max_column + 1):
                 currentCellValue = inputSheet.cell(row = row, column = column).value
@@ -139,11 +195,6 @@ def validateData(inputSheet):
                     dataErrors.append('A blank cell is present. Row ' + str(row) + '.')
                     continue
                 if inputSheet.title == 'T025X':
-                    populateSubsets(conn, sqlT024X1, subsetT024X1, field24X1)
-                    populateSubsets(conn, sqlTAD3F, subsetTAD3F, fieldD3F)
-                    populateSubsets(conn, sqlT0C8X1, subsetT0C8X1, fieldT0C8X1)
-                    populateSubsets(conn, sqlT0C8X2, subsetT0C8X2, fieldT0C8X2)
-                    
                     if column == 1: #COMPANY_CODE check
                         dataErrors.extend(validateCompanyCode(inputSheet, row, column))
                     if column == 2: #PRODUCT_PREFIX check
@@ -181,15 +232,12 @@ def validateData(inputSheet):
                                 rowData.append(inputSheet.cell(row = row, column = i + 1).value)
                             if rowData in allAddRows:
                                 dataErrors.append('A duplicate row is present. Row ' + str(row) + '.')
+                            if rowData in tableDump:
+                                dataErrors.append('A row already exists in the table. Row ' + str(row) + '.')
                             allAddRows.append(rowData)
                             rowData = []
 
                 elif validateTable(inputSheet) == 'T026X': #Run validation on the inputSheet, based on table selection.
-                    populateSubsets(conn, sqlT024X2, subsetT024X2, field24X2)
-                    populateSubsets(conn, sqlT0C8X3, subsetT0C8X3, fieldT0C8X3)
-                    populateSubsets(conn, sqlT0C8X4, subsetT0C8X4, fieldT0C8X4)
-                    populateSubsets(conn, sqlT0C8X5, subsetT0C8X5, fieldT0C8X5)
-                    
                     if column == 1: #COMPANY_CODE check
                         dataErrors.extend(validateCompanyCode(inputSheet, row, column))
                     if column == 2: #PRODUCT_PREFIX check
@@ -235,6 +283,8 @@ def validateData(inputSheet):
                                 rowData.append(inputSheet.cell(row = row, column = i + 1).value)
                             if rowData in allAddRows:
                                 dataErrors.append('A duplicate row is present. Row ' + str(row) + '.')
+                            if rowData in tableDump:
+                                dataErrors.append('A row already exists in the table. Row ' + str(row) + '.')
                             allAddRows.append(rowData)
                             rowData = []
 
@@ -266,6 +316,8 @@ def validateData(inputSheet):
                                 rowData.append(inputSheet.cell(row = row, column = i + 1).value)
                             if rowData in allAddRows:
                                 dataErrors.append('A duplicate row is present. Row ' + str(row) + '.')
+                            if rowData in tableDump:
+                                dataErrors.append('A row already exists in the table. Row ' + str(row) + '.')
                             allAddRows.append(rowData)
                             rowData = []
                             

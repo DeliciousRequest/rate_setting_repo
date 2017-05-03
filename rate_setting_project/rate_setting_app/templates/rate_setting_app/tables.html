@@ -4,8 +4,9 @@
 {% block subtitle %}Tables{% endblock %}
 
 {% block content %}
-
-<b>Table:</b> <select>
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+<b>Table:</b> <select name="tableSelect">
 	<option value="T000X">T000X</option>
 	<option value="T000XA">T000XA</option>
 	<option value="T001X">T001X</option>
@@ -48,8 +49,64 @@
 	<option value="TW24X">TW24X</option>
 </select>
 
-<input type="button" value="Go" /> <br />
+<button type="submit">Go</button> <br />
 <br />
-<b>Dynamically populated tables will go here.</b>
+ </form>
+
+<style>
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #000000;
+    text-align: left;
+    padding: 8px;
+}
+
+th {
+	background-color: #91D0FF;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+</style>
+
+<div class="scrollit">
+<table>
+	<thead>
+		<tr>
+		    <th>COMPANY_CODE</th>
+		    <th>PRODUCT_PREFIX</th>
+		    <th>PRODUCT_SUFFIX</th>
+		    <th>LOB_CODE</th>
+		    <th>EFFECTIVE_DATE</th>
+		    <th>REL_EXIST_STRETCH</th>
+		    <th>DECNT_GE705_CONTYR</th>
+		    <th>FIRST_RMD_RULE</th>
+		    <th>FIRST_RMD_RUL_DESC</th>
+		    <th>DECNT_GE705_DEADYR</th>
+		    <th>FIRST_AGE_RULE</th>
+		    <th>FIRST_AGE_RUL_DESC</th>
+		    <th>ADJ_TO_LE</th>    
+		    <th>ADJ_TO_LE_DESC</th>
+		    <th>RMD_METHOD</th>
+		    <th>RMD_METHOD_DESC</th>
+  		</tr>
+	</thead>
+  	<tbody>
+  		{% for row in table_list %}
+  			<tr>
+	 		{% for value in row %}
+    			<td>{{ value }}</td>
+     		{% endfor %}
+    		</tr>
+    	{% endfor %}
+  	</tbody>
+</table>
+</div>
 
 {% endblock %}
