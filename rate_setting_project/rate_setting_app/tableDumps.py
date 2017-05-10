@@ -1,5 +1,5 @@
 import ibm_db
-conn = ibm_db.connect('DATABASE=DSNDP30;HOSTNAME=DSNDP30;PORT=2646;PROTOCOL=TCPIP;UID=E0015EY;PWD=acTrpj83;', '', '')
+conn = ibm_db.connect('DATABASE=DSNDP30;HOSTNAME=DSNDP30;PORT=2646;PROTOCOL=TCPIP;UID=E0015EY;PWD=acTrpj84;', '', '')
 
 def determineRowCount(tableName):
     sqlCount = 'SELECT COUNT(*) FROM E0015DB.' + tableName + ' WHERE COMPANY_CODE = \'MLF\''
@@ -37,3 +37,13 @@ def populateTableDump(tableName):
         tableList.append(currentRow)
         dictionary = ibm_db.fetch_tuple(stmt)
     return tableList
+
+def populateTableHeaders(tableName):
+    headerList = []
+    headerSQL = 'SELECT * FROM SYSIBM.SYSCOLUMNS where tbname = \'' + tableName + '\' ORDER BY COLNO ASC'
+    stmt = ibm_db.exec_immediate(conn, headerSQL)
+    dictionary = ibm_db.fetch_assoc(stmt)
+    while dictionary != False:
+        headerList.append(str(dictionary['NAME']).rstrip())
+        dictionary = ibm_db.fetch_assoc(stmt)
+    return headerList

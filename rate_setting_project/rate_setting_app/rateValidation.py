@@ -9,7 +9,7 @@ validStates = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA',
                'ND', 'OH', 'OK', 'OR', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI',
                'WY', 'OT', '***']
 
-conn = ibm_db.connect('DATABASE=DSNDP30;HOSTNAME=DSNDP30;PORT=2646;PROTOCOL=TCPIP;UID=E0015EY;PWD=acTrpj83;', '', '')
+conn = ibm_db.connect('DATABASE=DSNDP30;HOSTNAME=DSNDP30;PORT=2646;PROTOCOL=TCPIP;UID=E0015EY;PWD=acTrpj84;', '', '')
 sqlT024X1 = 'SELECT DISTINCT DCLR_INT_RT_TBL FROM E0015DB.T024X WHERE COMPANY_CODE = \'MLF\''
 sqlT024X2 = 'SELECT DISTINCT GUAR_INT_RT_TBL FROM E0015DB.T024X WHERE COMPANY_CODE = \'MLF\''
 sqlTAD3F = 'SELECT DISTINCT DECL_TBL_NUMBER FROM E0015DB.TAD3F WHERE COMPANY_CODE = \'MLF\''
@@ -143,12 +143,14 @@ def populateTableDump(inputConn, tableName):
             except:
                 pass
             
-            if i == 3 or i == 6:
-                currentRow[i] = currentRow[i].replace('\x9f', '*')
-
-            if i == 4 or i == 5:
-                currentRow[i] = currentRow[i].strftime('%Y-%m-%d')
-
+            try:
+                if i == 3 or i == 6:
+                    currentRow[i] = currentRow[i].replace('\x9f', '*')
+    
+                if i == 4 or i == 5:
+                    currentRow[i] = currentRow[i].strftime('%Y-%m-%d')
+            except:
+                pass
         tableList.append(currentRow)
         dictionary = ibm_db.fetch_tuple(stmt)
     return tableList

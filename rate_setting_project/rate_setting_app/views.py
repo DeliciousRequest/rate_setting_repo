@@ -31,7 +31,11 @@ def validation(request):
 def tables(request):
     if request.method == 'POST':
         table_list = populateTableDump(request.POST['tableSelect'])
+        header_list = populateTableHeaders(request.POST['tableSelect'])
+        table_name = request.POST['tableSelect']
         return render(request, 'rate_setting_app/tables.html', {
-            'table_list': table_list
+            'table_list': table_list,
+            'header_list': header_list,
+            'table_name': table_name
         })
     return render(request, 'rate_setting_app/tables.html')

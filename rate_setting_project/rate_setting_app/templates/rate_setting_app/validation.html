@@ -1,19 +1,26 @@
 {% extends "rate_setting_app/base.html" %}
+{% load staticfiles %}
 
 {% block title %}Rate Setting Validation{% endblock title %}
 {% block subtitle %}Validation{% endblock %}
 
 {% block content %}
- <form method="post" enctype="multipart/form-data">
+ <form method="post" enctype="multipart/form-data" id="validationForm">
     {% csrf_token %}
     <b>Please upload the sheet you want to validate.</b> <br />
     {{ form.as_p }}
-    <button type="submit">Go</button> <button type="reset" id="btn_clear">Clear</button>
+    <button type="submit" id="btn_submit">Go</button> <button type="reset" id="btn_clear">Clear</button>
  </form>
 
 <b>Validation Results:</b> <br />
 <textarea id="ta_results" cols="87" rows="20" disabled>
 {% if validation_results %}{{ validation_results }}{% endif %}
 </textarea>
+<div id="wrapper">
+	<div class="loadingMessage" id="loadingBox">
+		<h3>Please wait...</h3>
+		<img src="{% static "images/spinner.gif" %}" alt="Loading..." />
+	</div>
+</div>
 
 {% endblock %}

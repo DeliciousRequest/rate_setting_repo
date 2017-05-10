@@ -5,4 +5,13 @@ $('#btn_clear').click(function(){
 	$('#ta_results').val('');
 		});
 
+$('#validationForm').submit(function(){
+	$('#ta_results').val('');
+	$('#loadingBox').css({
+		'display' : 'block'
+		})
+	$('#ta_results').css({
+		'background' : 'darkgray'
+		})
+	});
 });
